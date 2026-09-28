@@ -1,0 +1,27 @@
+summing 32x4 matrix...
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==52037==ERROR: AddressSanitizer: SEGV on unknown address (pc 0x6067dfedd4f1 bp 0x7fff3e169db0 sp 0x7fff3e169d90 T0)
+==52037==The signal is caused by a READ memory access.
+==52037==Hint: this fault was caused by a dereference of a high value address (see register values below).  Disassemble the provided pc to learn which register was used.
+    #0 0x6067dfedd4f1 in row_sum /work/challenges/08_uninitialized_read/bug.c:91
+    #1 0x6067dfedd58b in main /work/challenges/08_uninitialized_read/bug.c:103
+    #2 0x759142e211c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #3 0x759142e2128a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #4 0x6067dfedd244 in _start (/work/challenges/08_uninitialized_read/debug+0x1244) (BuildId: 59d11056df5f9fcb674abd4831a40fc8de64f8c1)
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV /work/challenges/08_uninitialized_read/bug.c:91 in row_sum
+==52037==ABORTING
+
+
+
+rogram received signal SIGSEGV, Segmentation fault.
+0x0000555555555330 in row_sum (rows=0x5555555592a0, nrows=32) at bug.c:91
+91                  total += rows[i][j];      
+
+
+#0  0x0000555555555330 in row_sum (rows=0x5555555592a0, nrows=32) at bug.c:91
+#1  0x000055555555539d in main () at bug.c:103
+
++=2 부분을 1로 바꿈.
