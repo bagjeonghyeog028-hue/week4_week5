@@ -27,6 +27,9 @@
  *   → colon 이 (nil) 로 찍힌 줄이 원인.
  *   (stdout 은 버퍼링되니 stderr 로 찍어야 크래시 직전 로그가 남는다)
  *
+ * 
+ * 
+ * 
  * TODO: strchr 의 NULL 반환을 검사하라. ':' 없는 줄은 건너뛰거나 오류로 처리한다.
  */
 #include <stdio.h>
@@ -46,15 +49,18 @@ static char *skip_ws(char *s) {
 }
 
 static void parse_headers(char *text, Headers *h) {
-    for (char *line = strtok(text, "\n"); line != NULL; line = strtok(NULL, "\n")) {
-        char *colon = strchr(line, ':');   
-
-        *colon = '\0';                    
+    for (char *line = strtok(text, "\n"); line != NULL; line = strtok(NULL, "\n")) {  
+        char *colon = strchr(line, ':');
+        if (colon == NULL) {
+            
+            continue;
+        }
+        *colon = '\0';
         char *key = line;
         char *val = skip_ws(colon + 1);
 
         if (h->count < MAX_HEADERS) {
-            h->keys[h->count] = key;
+            h->keys[h->count] = key; //h에서 Headers안인 count.
             h->vals[h->count] = val;
             h->count++;
         }
@@ -66,9 +72,8 @@ int main(void) {
     char raw[] =
         "Host: example.com\n"
         "Accept: */*\n"
-        "Connection\n"                     
-        "User-Agent: memdbg-cli\n";
-
+        "Connection\n";
+        
     Headers h = { .count = 0 };
     parse_headers(raw, &h);                
 
