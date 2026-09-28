@@ -38,6 +38,7 @@
  *       Screen 쪽에서 closed 위젯을 free 한 뒤 그 슬롯을 NULL 로 만드는 편이 자연스럽습니다.
  *       이후 dispatch/render 루프가 NULL 슬롯을 건너뛰게 하세요. "해제 = 소유 포인터 무효화".
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -85,9 +86,9 @@ static const VTable DIALOG_VT = { dialog_render, dialog_on_event  };
 static Widget *widget_new(const VTable *vt, int id, const char *label) {
 
     /* [Thinking Point]
-    *   w 에 아직 아무 값도 넣지 않았는데, sizeof *w 로 *w 를 써도 괜찮은 이유는?
+    *   w 에 아직 아무 값도 넣지 않았는데, 'sizeof *w 로 *w' 를 써도 괜찮은 이유는?
     *   tip 1. sizeof 는 피연산자를 '실행(역참조)'하지 않고 '타입'만 본다.
-    *          → *w 의 타입(Widget)만 필요할 뿐, w 를 실제로 따라가지 않는다.
+    *          → '*w 의 타입(Widget)만 필요'할 뿐, w 를 실제로 따라가지 않는다.
     *   tip 2. 그래서 sizeof *w 는 (VLA 제외) 컴파일 타임에 sizeof(Widget) 상수로 치환된다.
     *   생각해보기: sizeof(Widget) 대신 sizeof *w 로 쓰면 어떤 장점이 있을까?
     */
@@ -113,6 +114,7 @@ static void screen_add(Screen *s, Widget *w) {
 static void screen_dispatch(Screen *s, int code) {
     for (int i = 0; i < s->count; i++) {
         Widget *w = s->items[i];
+        if (!w) continue;
         w->vtbl->on_event(w, code);
     }
 }
@@ -120,14 +122,24 @@ static void screen_dispatch(Screen *s, int code) {
 static void screen_render(Screen *s) {
     for (int i = 0; i < s->count; i++) {
         Widget *w = s->items[i];
+        if (!w) continue;
         w->vtbl->render(w);      
+    }
+}
+
+static void screen_reap_closed(Screen *s) {
+    for (int i = 0; i < s->count; i++) {
+        Widget *w = s->items[i];  //Widget *w = s->items[i]; 삭제
+        if (w && w->closed) {  //여기서 추가. 3줄.
+            widget_destroy(w);
+            s->items[i] = NULL; 
+        }
     }
 }
 
 static void dialog_on_event(Widget *self, int code) {
     if (code == 1) {
-        self->closed = 1;
-        widget_destroy(self);   
+        self->closed = 1;  //Widget *w = s->items[i]; 삭제
     }
 }
 
@@ -157,7 +169,8 @@ int main(void) {
     screen_render(&s);
     screen_dispatch(&s, 1);
 
-    /* TODO 닫힌(closed) 위젯을 여기서 정리(free + 해당 슬롯 NULL)할 필요가 있음 */
+    
+    screen_reap_closed(&s); // 닫힌(closed) 위젯을 여기서 정리(free + 해당 슬롯 NULL)할 필요가 있음 
 
     char *status = app_build_status("dialog closed");
     printf("%s\n", status);
@@ -165,7 +178,8 @@ int main(void) {
     printf("frame 2:\n");
     screen_render(&s);           
 
-    free(status);
-    for (int i = 0; i < s.count; i++) free(s.items[i]);
+    free(status); 
+    for (int i = 0; i < s.count; i++)
+        free(s.items[i]);
     return 0;
 }
