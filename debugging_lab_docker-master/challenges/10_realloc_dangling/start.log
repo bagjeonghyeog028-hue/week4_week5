@@ -1,0 +1,38 @@
+Starting program: /work/challenges/10_realloc_dangling/debug 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+len=4003 cap=4096 head=0 tail=3999
+free(): double free detected in tcache 2
+
+Program received signal SIGABRT, Aborted.
+0x00007ffff7e43c0c in pthread_kill () from /lib/x86_64-linux-gnu/libc.so.6
+(gdb) bt
+#0  0x00007ffff7e43c0c in pthread_kill () from /lib/x86_64-linux-gnu/libc.so.6
+#1  0x00007ffff7dea27e in raise () from /lib/x86_64-linux-gnu/libc.so.6
+#2  0x00007ffff7dcd8ff in abort () from /lib/x86_64-linux-gnu/libc.so.6
+#3  0x00007ffff7dce7b6 in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+#4  0x00007ffff7e4e0d5 in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+#5  0x00007ffff7e5063f in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+--Type <RET> for more, q to quit, c to continue without paging--
+#6  0x00007ffff7e52eae in free () from /lib/x86_64-linux-gnu/libc.so.6
+#7  0x0000555555555483 in eb_free (e=0x7fffffffe070) at bug.c:85
+#8  0x0000555555555573 in main () at bug.c:104
+
+
+==95870==ERROR: AddressSanitizer: attempting double-free on 0x502000000010 in thread T0:
+    #0 0x7c47072154d8 in free ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:52
+    #1 0x62181660e934 in eb_free /work/challenges/10_realloc_dangling/bug.c:85
+    #2 0x62181660ec22 in main /work/challenges/10_realloc_dangling/bug.c:104
+    #3 0x7c4706f301c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #4 0x7c4706f3028a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #5 0x62181660e2a4 in _start (/work/challenges/10_realloc_dangling/debug+0x12a4) (BuildId: 9f0d95ed4f19a085a86b2794f1a1568f1443c56c)
+
+0x502000000010 is located 0 bytes inside of 16-byte region [0x502000000010,0x502000000020)
+freed by thread T0 here:
+    #0 0x7c4707215778 in realloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:85
+    #1 0x62181660e679 in eb_grow /work/challenges/10_realloc_dangling/bug.c:70
+    #2 0x62181660e7bf in eb_push /work/challenges/10_realloc_dangling/bug.c:77
+    #3 0x62181660ead1 in main /work/challenges/10_realloc_dangling/bug.c:99
+    #4 0x7c4706f301c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #5 0x7c4706f3028a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #6 0x62181660e2a4 in _start (/work/challenges/10_realloc_dangling/debug+0x12a4) (BuildId: 9f0d95ed4f19a085a86b2794f1a1568f1443c56c)

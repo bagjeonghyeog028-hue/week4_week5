@@ -61,7 +61,8 @@ static void eb_init(EditBuffer *e) {
 }
 
 static void eb_snapshot(EditBuffer *e) {
-    if (e->undo_n < MAX_UNDO) e->undo[e->undo_n++] = e->data;
+    if (e->undo_n < MAX_UNDO)
+        e->undo[e->undo_n++] = e->data;
 }
 
 static void eb_grow(EditBuffer *e, size_t need) {
@@ -101,7 +102,7 @@ int main(void) {
     printf("len=%zu cap=%zu head=%d tail=%d\n",
            e.len, e.cap, e.data[0], e.data[e.len - 1]);
 
-    eb_free(&e);                     
+    eb_free(&e);
     printf("done\n");
     return 0;
 }
