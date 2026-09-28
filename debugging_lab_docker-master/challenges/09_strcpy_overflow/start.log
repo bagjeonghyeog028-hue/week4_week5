@@ -1,0 +1,31 @@
+0x00007ffff7f40af0 in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+
+#0  0x00007ffff7f40af0 in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+#1  0x000055555555533b in join (parts=0x7fffffffe0b0, n=4) at bug.c:54
+#2  0x00005555555553fd in main () at bug.c:70
+q
+Breakpoint 1 at 0x55555555538a: file bug.c, line 61.
+
+==87192==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x50300000005d at pc 0x7945e6234923 bp 0x7ffee924d2a0 sp 0x7ffee924ca48
+WRITE of size 200000 at 0x50300000005d thread T0
+    #0 0x7945e6234922 in strcpy ../../../../src/libsanitizer/asan/asan_interceptors.cpp:563
+    #1 0x5c06d3df84a2 in join /work/challenges/09_strcpy_overflow/bug.c:54
+    #2 0x5c06d3df86cf in main /work/challenges/09_strcpy_overflow/bug.c:70
+    #3 0x7945e5fa41c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #4 0x7945e5fa428a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #5 0x5c06d3df82a4 in _start (/work/challenges/09_strcpy_overflow/debug+0x12a4) (BuildId: 257c58f1c9e6a147047d91576288d664bd70a38d)
+
+0x50300000005d is located 0 bytes after 29-byte region [0x503000000040,0x50300000005d)
+allocated by thread T0 here:
+    #0 0x7945e628a9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69
+    #1 0x5c06d3df8418 in join /work/challenges/09_strcpy_overflow/bug.c:49
+    #2 0x5c06d3df86cf in main /work/challenges/09_strcpy_overflow/bug.c:70
+    #3 0x7945e5fa41c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #4 0x7945e5fa428a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #5 0x5c06d3df82a4 in _start (/work/challenges/09_strcpy_overflow/debug+0x12a4) (BuildId: 257c58f1c9e6a147047d91576288d664bd70a38d)
+
+==87192==ABORTING
+
+54 line
+
+54 줄의 parts를 따라가다 joined_size과 관련된 for (int i = 0; i < n ; i++)로 수정. 원래는  i< n- 1이었음.

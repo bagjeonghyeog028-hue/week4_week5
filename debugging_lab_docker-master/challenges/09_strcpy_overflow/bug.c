@@ -38,8 +38,8 @@
 /* 필요한 총 바이트 수 = 모든 조각 길이 합 + 종료 문자 1 */
 static size_t joined_size(const char *const *parts, int n) {
     size_t total = 1;                        /* '\0' 자리 */
-    for (int i = 0; i < n - 1; i++) {        
-        total += strlen(parts[i]);
+    for (int i = 0; i < n ; i++) {        
+        total += strlen(parts[i]);  //위에서 1로 정한 \0자리를 포함한 조각 길이 합.
     }
     return total;
 }
