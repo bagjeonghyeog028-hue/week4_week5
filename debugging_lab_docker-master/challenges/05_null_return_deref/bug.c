@@ -31,6 +31,12 @@
  * TODO: cfg_get() 의 NULL 반환을 반드시 검사하라. 없는 키는 기본값("")으로 대체하거나
  *       명시적 오류로 처리한다("사용 전에 검사" 원칙).
  */
+
+
+
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -48,7 +54,8 @@ static void cfg_set(Config *c, const char *k, const char *v) {
 
 static const char *cfg_get(const Config *c, const char *k) {
     for (int i = 0; i < c->n; i++)
-        if (strcmp(c->keys[i], k) == 0) return c->vals[i];
+        if (strcmp(c->keys[i], k) == 0) 
+            return c->vals[i];
     return NULL;                       /* 없는 키 → NULL */
 }
 
@@ -57,14 +64,18 @@ static void expand(const Config *c, const char *tmpl, char *out, size_t outcap) 
     for (const char *p = tmpl; *p; ) {
         if (p[0] == '$' && p[1] == '{') {
             const char *end = strchr(p, '}');
-            if (!end) break;
+            if (!end)
+                break;
             char key[32];
             size_t kl = (size_t)(end - (p + 2));
             if (kl >= sizeof key) kl = sizeof key - 1;
             memcpy(key, p + 2, kl);
             key[kl] = '\0';
 
-            const char *v = cfg_get(c, key);      
+            const char *v = cfg_get(c, key);
+            if (v == NULL) {
+                continue;
+            }
             size_t vl = strlen(v);                 
             if (o + vl < outcap) { memcpy(out + o, v, vl); o += vl; }
             p = end + 1;
@@ -96,7 +107,7 @@ int main(void) {
      *   생각해보기: 설정에 없는 키(${path})를 만나면 expand() 는 어떤 값을 받게 되고,
      *               그 값을 검사 없이 strlen/복사에 쓰면 무슨 일이 벌어질까?
      *               (힌트: "값이 없다"는 NULL 이지 빈 문자열 ""이 아니다) */
-    const char *tmpl = "http://${host}:${port}/${path}/index.html";
+    const char *tmpl = "http://${host}:${port}/index.html";
     char out[256];
 
     expand(&cfg, tmpl, out, sizeof out);   /* ${path} 치환 시 NULL 역참조 → 크래시 */

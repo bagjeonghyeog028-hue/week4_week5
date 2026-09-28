@@ -1,0 +1,26 @@
+Program received signal SIGSEGV, Segmentation fault.
+0x00007ffff7f40c5c in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+(gdb) bt
+#0  0x00007ffff7f40c5c in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+#1  0x00005555555553b8 in expand (c=0x7fffffffdeb0, tmpl=0x555555556028 "http://${host}:${port}/${path}/index.html", out=0x7fffffffdfc0 "http://example.com:8080/\230\340\377\377\377\177", outcap=256) at bug.c:76
+#2  0x000055555555550d in main () at bug.c:11
+
+
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==17933==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x7c5dd7304c5c bp 0x7ffe3bb5c100 sp 0x7ffe3bb5b888 T0)
+==17933==The signal is caused by a READ memory access.
+==17933==Hint: address points to the zero page.
+    #0 0x7c5dd7304c5c  (/lib/x86_64-linux-gnu/libc.so.6+0x19bc5c) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #1 0x7c5dd73f9826 in strlen ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:389
+    #2 0x5c96e68397f3 in expand /work/challenges/05_null_return_deref/bug.c:76
+    #3 0x5c96e6839bef in main /work/challenges/05_null_return_deref/bug.c:110
+    #4 0x7c5dd71931c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #5 0x7c5dd719328a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #6 0x5c96e68392a4 in _start (/work/challenges/05_null_return_deref/debug+0x12a4) (BuildId: 98ecc7cfa5e6c8a132c14ff73bef23b1013c5da8)
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV (/lib/x86_64-linux-gnu/libc.so.6+0x19bc5c) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65) 
+==17933==ABORTING
+
+-->${path} 제거 107
