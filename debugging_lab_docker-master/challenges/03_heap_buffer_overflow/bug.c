@@ -32,8 +32,8 @@
  *   → newcap 과 realloc 크기가 다르면 그게 원인.
  *   (stdout 은 버퍼링되니 stderr 로 찍어야 크래시 직전 로그가 남는다)
  *
- * TODO: realloc 은 반드시 "새 용량(newcap)" 으로 호출하고, l->cap 갱신과 순서를 맞춰야 한다.
- *       (성장 로직은 '용량 필드'와 '실제 확보량'이 항상 같도록 유지해야 한다)
+ * 
+ * 
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -56,30 +56,40 @@ static void list_init(IntList *l) {
     l->cap  = 8;
     l->len  = 0;
     l->data = malloc(l->cap * sizeof(int));
-    if (!l->data) { perror("malloc"); exit(1); }
+    if (!l->data) {perror("malloc");
+        free(l->data);
+        exit(1);
+    }
 }
 
 static void list_ensure(IntList *l, size_t need) {
-    if (need <= l->cap) return;
-
+    if (need <= l->cap)
+        return;
+    
+    
     size_t newcap = l->cap ? l->cap * 2 : 8;
-    while (newcap < need) newcap *= 2;
-
-    int *p = realloc(l->data, l->cap * sizeof(int));
-    if (!p) { perror("realloc"); free(l->data); exit(1); }
-
-    l->data = p;
+    
+    while (newcap < need)
+        newcap *= 2;
     l->cap  = newcap;
-}
+    int *p = realloc(l->data, l->cap * sizeof(int));
+    if (!p) { perror("realloc");
+        free(l->data);
+        exit(1);
+    }
+    l->data = p;
+    
 
+}
 static void list_push(IntList *l, int x) {
-    if (l->len == l->cap) list_ensure(l, l->cap + 1);
-    l->data[l->len++] = x;
+    if (l->len == l->cap) 
+        list_ensure(l, l->cap + 1);
+    l->data[l->len++] = x;  
 }
 
 static long long list_sum(const IntList *l) {
     long long s = 0;
-    for (size_t i = 0; i < l->len; i++) s += l->data[i];
+    for (size_t i = 0; i < l->len; i++) s += l->data[i]; 
     return s;
 }
 
@@ -87,6 +97,8 @@ static void list_free(IntList *l) {
     free(l->data);
     l->data = NULL;
     l->len = l->cap = 0;
+    
+
 }
 
 int main(void) {
@@ -95,10 +107,13 @@ int main(void) {
 
     const int N = 2000000;
     for (int i = 0; i < N; i++) {
-        list_push(&l, i % 100);        
+        list_push(&l, i % 100);        //////
     }
 
     printf("len=%zu cap=%zu sum=%lld\n", l.len, l.cap, list_sum(&l));
     list_free(&l);
+
     return 0;
 }
+//TODO: realloc 은 반드시 "새 용량(newcap)" 으로 호출하고, l->cap 갱신과 순서를 맞춰야 한다.
+//       (성장 로직은 '용량 필드'와 '실제 확보량'이 항상 같도록 유지해야 한다)
