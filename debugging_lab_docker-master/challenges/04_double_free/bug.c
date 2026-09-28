@@ -36,8 +36,7 @@
  *   → by_id 루프와 by_name 루프에서 동일 주소가 각각 나오면 이중 해제.
  *   (stdout 은 버퍼링되니 stderr 로 찍어야 크래시 직전 로그가 남는다)
  *
- * TODO: 소유권은 한 곳만 갖게 한다. 예) by_id 를 "소유 인덱스"로 정하고 여기서만 해제,
- *       by_name 은 "관찰용(빌려온) 인덱스"로 두어 절대 free 하지 않는다.
+ * 
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -48,14 +47,14 @@ typedef struct {
     char *name;      
 } Rec;
 
-#define MAXN 16
+#define MAXN 64
 typedef struct {
-    Rec *by_id[MAXN];     
+    Rec *by_id[MAXN];     //
     Rec *by_name[MAXN];    
     int  count;
 } Directory;
 
-static Rec *rec_new(int id, const char *name) {
+static Rec *rec_new(int id, const char *name) { //padding = 3
     Rec *r = malloc(sizeof *r);
     if (!r) { perror("malloc"); exit(1); }
     r->id = id;
@@ -65,7 +64,7 @@ static Rec *rec_new(int id, const char *name) {
     return r;
 }
 
-static void directory_add(Directory *d, int id, const char *name) {
+static void directory_add(Directory *d, int id, const char *name) { //padding = 3
     Rec *r = rec_new(id, name);
     d->by_id[d->count]   = r;
     d->by_name[d->count] = r;      /* 같은 포인터를 두 인덱스에 함께 등록 */
@@ -85,32 +84,33 @@ static void directory_sort_by_name(Directory *d) {
     }
 }
 
-static Rec *find_by_id(Directory *d, int id) {
+static Rec *find_by_id(Directory *d, int id) { // padding = NONE
     for (int i = 0; i < d->count; i++)
-        if (d->by_id[i]->id == id) return d->by_id[i];
+        if (d->by_id[i]->id == id)  //id -> name 
+            return d->by_id[i]; // ``
     return NULL;
 }
 
-static void directory_dump(Directory *d) {
+static void directory_dump(Directory *d) { // X
     printf("by id:  ");
-    for (int i = 0; i < d->count; i++) printf("%d:%s ", d->by_id[i]->id, d->by_id[i]->name);
+    for (int i = 0; i < d->count; i++)
+        printf("%d:%s ", d->by_id[i]->id, d->by_id[i]->name);
     printf("\nby name:");
-    for (int i = 0; i < d->count; i++) printf(" %s(%d)", d->by_name[i]->name, d->by_name[i]->id);
+    for (int i = 0; i < d->count; i++)
+        printf(" %s(%d)", d->by_name[i]->name, d->by_name[i]->id);
     printf("\n");
 }
 
-static void directory_free(Directory *d) {
+static void directory_free(Directory *d) { // X
+
     for (int i = 0; i < d->count; i++) {
-        free(d->by_id[i]->name);
-        free(d->by_id[i]);                 
-    }
-    for (int i = 0; i < d->count; i++) {
-        free(d->by_name[i]);               
+        free(d->by_name[i]->name);
+        free(d->by_name[i]);
     }
     d->count = 0;
 }
 
-int main(void) {
+int main(void) {  //X
     Directory dir = { .count = 0 };
 
     directory_add(&dir, 3, "carol");
@@ -120,11 +120,14 @@ int main(void) {
 
     directory_sort_by_name(&dir);
     directory_dump(&dir);
-
+    
+    
     Rec *r = find_by_id(&dir, 2);
     if (r) printf("lookup id=2 -> %s\n", r->name);
-
-    directory_free(&dir);                  
+    directory_free(&dir);
+    
     printf("done\n");
     return 0;
 }
+//TODO: 소유권은 한 곳만 갖게 한다. 예) by_id 를 "소유 인덱스"로 정하고 여기서만 해제,
+//       by_name 은 "관찰용(빌려온) 인덱스"로 두어 절대 free 하지 않는다.

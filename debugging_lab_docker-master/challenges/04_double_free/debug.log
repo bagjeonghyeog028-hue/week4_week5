@@ -1,0 +1,140 @@
+by id:  3:carol 1:alice 4:dave 2:bob 
+by name: alice(1) bob(2) carol(3) dave(4)
+lookup id=2 -> bob
+=================================================================
+==6398==ERROR: AddressSanitizer: attempting double-free on 0x502000000050 in thread T0:
+    #0 0xf19a78f461b4 in free ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:52
+    #1 0xb73b47161cb4 in directory_free /work/challenges/04_double_free/bug.c:108
+    #2 0xb73b47161f70 in main /work/challenges/04_double_free/bug.c:127
+    #3 0xf19a78cc84c0  (/lib/aarch64-linux-gnu/libc.so.6+0x284c0) (BuildId: 27027b96e5b8c475fc327aa445bea1c71d37b4e2)
+    #4 0xf19a78cc8594 in __libc_start_main (/lib/aarch64-linux-gnu/libc.so.6+0x28594) (BuildId: 27027b96e5b8c475fc327aa445bea1c71d37b4e2)
+    #5 0xb73b471611ac in _start (/work/challenges/04_double_free/debug+0x11ac) (BuildId: 370ef94363568141c8ba02cb836cae707c90fc4a)
+
+0x502000000050 is located 0 bytes inside of 16-byte region [0x502000000050,0x502000000060)
+freed by thread T0 here:
+    #0 0xf19a78f461b4 in free ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:52
+    #1 0xb73b47161bf8 in directory_free /work/challenges/04_double_free/bug.c:105
+    #2 0xb73b47161f70 in main /work/challenges/04_double_free/bug.c:127
+    #3 0xf19a78cc84c0  (/lib/aarch64-linux-gnu/libc.so.6+0x284c0) (BuildId: 27027b96e5b8c475fc327aa445bea1c71d37b4e2)
+    #4 0xf19a78cc8594 in __libc_start_main (/lib/aarch64-linux-gnu/libc.so.6+0x28594) (BuildId: 27027b96e5b8c475fc327aa445bea1c71d37b4e2)
+    #5 0xb73b471611ac in _start (/work/challenges/04_double_free/debug+0x11ac) (BuildId: 370ef94363568141c8ba02cb836cae707c90fc4a)
+
+previously allocated by thread T0 here:
+    #0 0xf19a78f476d0 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69
+    #1 0xb73b471612ac in rec_new /work/challenges/04_double_free/bug.c:58
+    #2 0xb73b471613f4 in directory_add /work/challenges/04_double_free/bug.c:68
+    #3 0xb73b47161ed0 in main /work/challenges/04_double_free/bug.c:117
+    #4 0xf19a78cc84c0  (/lib/aarch64-linux-gnu/libc.so.6+0x284c0) (BuildId: 27027b96e5b8c475fc327aa445bea1c71d37b4e2)
+    #5 0xf19a78cc8594 in __libc_start_main (/lib/aarch64-linux-gnu/libc.so.6+0x28594) (BuildId: 27027b96e5b8c475fc327aa445bea1c71d37b4e2)
+    #6 0xb73b471611ac in _start (/work/challenges/04_double_free/debug+0x11ac) (BuildId: 370ef94363568141c8ba02cb836cae707c90fc4a)
+
+SUMMARY: AddressSanitizer: double-free ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:52 in free
+
+
+
+Starting program: /work/challenges/04_double_free/debug 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/aarch64-linux-gnu/libthread_db.so.1".
+
+by id:  3:carol 1:alice 4:dave 2:bob 
+by name: alice(1) bob(2) carol(3) dave(4)
+lookup id=2 -> bob
+free(): double free detected in tcache 2
+
+
+Program received signal SIGABRT, Aborted.
+0x0000fffff7e774d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6
+
+
+#0  0x0000fffff7e774d8 in ?? () from /lib/aarch64-linux-gnu/libc.so.6    //52~69 malloc~free부분.
+#1  0x0000fffff7e2cb3c in raise () from /lib/aarch64-linux-gnu/libc.so.6
+#2  0x0000fffff7e17e00 in abort () from /lib/aarch64-linux-gnu/libc.so.6
+#3  0x0000fffff7e6aac4 in ?? () from /lib/aarch64-linux-gnu/libc.so.6     /////?
+#4  0x0000fffff7e81fdc in ?? () from /lib/aarch64-linux-gnu/libc.so.6     //^^^^^^윗줄.
+#5  0x0000fffff7e844fc in ?? () from /lib/aarch64-linux-gnu/libc.so.6     //^^^^^^^윗줄.
+
+
+#6  0x0000fffff7e86e68 in free () from /lib/aarch64-linux-gnu/libc.so.6
+#7  0x0000aaaaaaaa0f04 in directory_free (d=0xffffffffefc0) at bug.c:108
+#8  0x0000aaaaaaaa1018 in main () at bug.c:127
+
+
+
+
+by id:  3:carol 1:alice 4:dave 2:bob 
+by name: alice(1) bob(2) carol(3) dave(4)
+
+lookup id=2 -> bob
+free(): double free detected in tcache 2
+Aborted (core dumped)
+exit: 134
+
+
+
+
+
+
+
+by id:  3:carol 1:alice 4:dave 2:bob 
+by name: alice(1) bob(2) carol(3) dave(4)
+lookup id=2 -> bob
+free(): double free detected in tcache 2
+Aborted (core dumped)
+exit: 134
+
+
+
+
+
+                                 
+by id:  3:carol 1:alice 4:dave 2:bob 
+by name: alice(1) bob(2) carol(3) dave(4)
+lookup id=2 -> bob
+done <<<<-
+
+=================================================================
+==3223==ERROR: LeakSanitizer: detected memory leaks
+
+Direct leak of 16 byte(s) in 1 object(s) allocated from:
+    #0 0xf4d658ad76d0 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69
+    #1 0xab29c31c12ac in rec_new /work/challenges/04_double_free/bug.c:58
+    #2 0xab29c31c13f4 in directory_add /work/challenges/04_double_free/bug.c:68
+    #3 0xab29c31c1de0 in main /work/challenges/04_double_free/bug.c:116
+    #4 0xf4d6588584c0  (/lib/aarch64-linux-gnu/libc.so.6+0x284c0) (BuildId: 27027b96e5b8c475fc327aa445bea1c71d37b4e2)
+    #5 0xf4d658858594 in __libc_start_main (/lib/aarch64-linux-gnu/libc.so.6+0x28594) (BuildId: 27027b96e5b8c475fc327aa445bea1c71d37b4e2)
+    #6 0xab29c31c11ac in _start (/work/challenges/04_double_free/debug+0x11ac) (BuildId: b11e547e685674e7e92efca9fca78c74e6d98ea8)
+
+Direct leak of 16 byte(s) in 1 object(s) allocated from:
+    #0 0xf4d658ad76d0 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69
+    #1 0xab29c31c12ac in rec_new /work/challenges/04_double_free/bug.c:58
+    #2 0xab29c31c13f4 in directory_add /work/challenges/04_double_free/bug.c:68
+    #3 0xab29c31c1df8 in main /work/challenges/04_double_free/bug.c:117
+    #4 0xf4d6588584c0  (/lib/aarch64-linux-gnu/libc.so.6+0x284c0) (BuildId: 27027b96e5b8c475fc327aa445bea1c71d37b4e2)
+    #5 0xf4d658858594 in __libc_start_main (/lib/aarch64-linux-gnu/libc.so.6+0x28594) (BuildId: 27027b96e5b8c475fc327aa445bea1c71d37b4e2)
+    #6 0xab29c31c11ac in _start (/work/challenges/04_double_free/debug+0x11ac) (BuildId: b11e547e685674e7e92efca9fca78c74e6d98ea8)
+
+Direct leak of 16 byte(s) in 1 object(s) allocated from:
+    #0 0xf4d658ad76d0 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69
+    #1 0xab29c31c12ac in rec_new /work/challenges/04_double_free/bug.c:58
+    #2 0xab29c31c13f4 in directory_add /work/challenges/04_double_free/bug.c:68
+    #3 0xab29c31c1e10 in main /work/challenges/04_double_free/bug.c:118
+    #4 0xf4d6588584c0  (/lib/aarch64-linux-gnu/libc.so.6+0x284c0) (BuildId: 27027b96e5b8c475fc327aa445bea1c71d37b4e2)
+    #5 0xf4d658858594 in __libc_start_main (/lib/aarch64-linux-gnu/libc.so.6+0x28594) (BuildId: 27027b96e5b8c475fc327aa445bea1c71d37b4e2)
+    #6 0xab29c31c11ac in _start (/work/challenges/04_double_free/debug+0x11ac) (BuildId: b11e547e685674e7e92efca9fca78c74e6d98ea8)
+
+Direct leak of 16 byte(s) in 1 object(s) allocated from:
+    #0 0xf4d658ad76d0 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69
+    #1 0xab29c31c12ac in rec_new /work/challenges/04_double_free/bug.c:58
+    #2 0xab29c31c13f4 in directory_add /work/challenges/04_double_free/bug.c:68
+    #3 0xab29c31c1dc8 in main /work/challenges/04_double_free/bug.c:115
+    #4 0xf4d6588584c0  (/lib/aarch64-linux-gnu/libc.so.6+0x284c0) (BuildId: 27027b96e5b8c475fc327aa445bea1c71d37b4e2)
+    #5 0xf4d658858594 in __libc_start_main (/lib/aarch64-linux-gnu/libc.so.6+0x28594) (BuildId: 27027b96e5b8c475fc327aa445bea1c71d37b4e2)
+    #6 0xab29c31c11ac in _start (/work/challenges/04_double_free/debug+0x11ac) (BuildId: b11e547e685674e7e92efca9fca78c74e6d98ea8)
+
+SUMMARY: AddressSanitizer: 64 byte(s) leaked in 4 allocation(s).
+
+
+
+
+
+정확한 정답 확인 필요.
