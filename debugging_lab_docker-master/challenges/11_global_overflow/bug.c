@@ -51,15 +51,15 @@ static unsigned char arena[ARENA_SIZE];    /* 전역(.bss) 아레나 */
 static size_t arena_off = 0;
 
 static void *arena_alloc(size_t n) {
-    void *p = &arena[arena_off];
+    void *p = &arena[n++];
     arena_off += n;
     return p;
 }
 
 static char *intern(const char *s) {
     size_t n = strlen(s) + 1;
-    char *dst = arena_alloc(n);
-    memcpy(dst, s, n);                      /* 경계를 넘은 위치면 여기서 크래시 */
+    char *dst = arena_alloc(n);    
+    memcpy(dst,s,n);         /* 경계를 넘은 위치면 여기서 크래시 */ //mm
     return dst;
 }
 

@@ -1,0 +1,20 @@
+0x00007ffff7f466fa in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+(gdb) bt
+#0  0x00007ffff7f466fa in ?? () from /lib/x86_64-linux-gnu/libc.so.6
+#1  0x0000555555555250 in intern (s=0x7fffffffe0c0 "checkpoint-349") at bug.c:62
+#2  0x0000555555555359 in main () at bug.c:79
+
+
+==10265==ERROR: AddressSanitizer: global-buffer-overflow on address 0x5fcba1e533e0 at pc 0x7420beeb5303 bp 0x7fffcd2440f0 sp 0x7fffcd243898
+WRITE of size 14 at 0x5fcba1e533e0 thread T0
+    #0 0x7420beeb5302 in memcpy ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors_memintrinsics.inc:115
+    #1 0x5fcba1e4f32f in intern /work/challenges/11_global_overflow/bug.c:62
+    #2 0x5fcba1e4f6b5 in main /work/challenges/11_global_overflow/bug.c:79
+    #3 0x7420bebd11c9  (/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #4 0x7420bebd128a in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x2a28a) (BuildId: a4a7992a8e66555c8141ab2a08a8465ff6e0ea65)
+    #5 0x5fcba1e4f1e4 in _start (/work/challenges/11_global_overflow/debug+0x11e4) (BuildId: 9f78b5e36f655511ad56a7bd051ae0360564286e)
+
+0x5fcba1e533e0 is located 0 bytes after global variable 'arena' defined in 'bug.c:50:22' (0x5fcba1e523e0) of size 4096
+0x5fcba1e533e0 is located 32 bytes before global variable 'arena_off' defined in 'bug.c:51:15' (0x5fcba1e53400) of size 8
+
+54  void *p = &arena[arena_off];---->>>>void *p = &arena[n++];  //change
