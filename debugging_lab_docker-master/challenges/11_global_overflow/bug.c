@@ -51,7 +51,7 @@ static unsigned char arena[ARENA_SIZE];    /* 전역(.bss) 아레나 */
 static size_t arena_off = 0;
 
 static void *arena_alloc(size_t n) {
-    void *p = &arena[n++];
+    void *p = &arena[n];
     arena_off += n;
     return p;
 }
