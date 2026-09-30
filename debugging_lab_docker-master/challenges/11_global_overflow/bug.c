@@ -51,14 +51,18 @@ static unsigned char arena[ARENA_SIZE];    /* 전역(.bss) 아레나 */
 static size_t arena_off = 0;
 
 static void *arena_alloc(size_t n) {
-    void *p = &arena[n];
+    if (n > sizeof(arena) - arena_off)
+        return NULL;
+    void *p = &arena[arena_off];
     arena_off += n;
     return p;
 }
 
 static char *intern(const char *s) {
     size_t n = strlen(s) + 1;
-    char *dst = arena_alloc(n);    
+    char *dst = arena_alloc(n); 
+    if (dst == NULL)
+        return NULL;   
     memcpy(dst,s,n);         /* 경계를 넘은 위치면 여기서 크래시 */
     return dst;
 }
@@ -76,10 +80,16 @@ int main(void) {
     for (int i = 0; i < 100000; i++) {
         char buf[32];
         snprintf(buf, sizeof buf, "%s-%d", words[i % nwords], i);
-        last = intern(buf);                 
+        char *p = intrn(buf);
+        if (p == NULL) {
+            fprintf(stderr, "arena full: i=%d off= %zu cap=%d\n", i, arena_off, ARENA_SIZE);
+            break;
+        }
+        last = p;                 
         total += (long)strlen(last);
     }
 
     printf("interned, last=%s total_len=%ld\n", last, total);
     return 0;
 }
+

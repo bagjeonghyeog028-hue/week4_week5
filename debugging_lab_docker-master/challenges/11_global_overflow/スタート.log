@@ -17,4 +17,9 @@ WRITE of size 14 at 0x5fcba1e533e0 thread T0
 0x5fcba1e533e0 is located 0 bytes after global variable 'arena' defined in 'bug.c:50:22' (0x5fcba1e523e0) of size 4096
 0x5fcba1e533e0 is located 32 bytes before global variable 'arena_off' defined in 'bug.c:51:15' (0x5fcba1e53400) of size 8
 
+
+
+
+
+
 54  void *p = &arena[arena_off];---->>>>void *p = &arena[n++];  //change
