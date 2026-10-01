@@ -11,8 +11,6 @@ static void screen_render(Screen *s) {
     }
 }  //123 부분
 
-
-
 (gdb) run
 Starting program: /work/challenges/01_use_after_free/debug 
 [Thread debugging using libthread_db enabled]

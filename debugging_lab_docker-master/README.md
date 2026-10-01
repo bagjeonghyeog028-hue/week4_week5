@@ -1,3 +1,29 @@
+q,quit으로 나감
+cd ..로 한칸 나오기
+
+
+gcc -g  bug.c -o debug
+gdb ./debug
+
+gcc -g -fsanitize=address bug.c -o debug
+./debug
+
+
+break main
+
+run
+
+frame 1
+
+make run NAME=11_global_overflow
+name  뒤 ex:01_use_after_free・・・
+
+for i in $(seq 1); do ./build/11_global_overflow; echo "exit: $?"; done
+
+저기서 03~flow까지가 폴더명이기에 이름만 수정.
+(seq {횟수})
+(for i in $(seq 10); do ./build/03_heap_buffer_overflow; echo "exit: $?"; done)
+
 # Debugging Lab
 
 C 언어 **메모리 버그**를 `gdb` 및 로그로 **크래시 지점 역추적 → 원인 분석 → 수정**하는 실습 세트입니다.
@@ -42,7 +68,8 @@ docker build -t memdbg .
 docker run --rm -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined \
     -v "$PWD":/work memdbg
 # ── 컨테이너 안에서 ──
-make check                                  # 20개 실행 → 크래시 여부 요약
+make check     
+    # 20개 실행 → 크래시 여부 요약
 gdb ./build/06_null_deref                   # run → bt → frame N → print 변수
 ```
 
